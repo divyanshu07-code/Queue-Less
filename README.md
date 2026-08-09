@@ -1,98 +1,197 @@
 # QueueLess
 
-QueueLess is a virtual queue system for campus counters — College Office, Canteen, Clinic, and Library — built for **Hack Devengers 1.0**.
+> 🏆 Built for **Hack Devengers 1.0 — Open Innovation Challenge**
 
-Students take a digital token from their phone, watch their position update live, and get a browser notification when it's nearly their turn. Staff run the counter from a password-protected admin dashboard: call the next token, mark walk-ins as served, send no-shows to the back of the line, and see live stats — all without touching the queue.db file directly.
+QueueLess is a smart virtual queue management platform designed to eliminate unnecessary physical waiting at campus services such as the **College Office, Canteen, Clinic, and Library**.
 
-## Features
+Students can take a digital token from their phone, leave the physical queue, track their live position and estimated waiting time, and receive notifications when their turn is approaching.
 
-- **Student tokens** — join any counter's line in two taps, no app install, no account.
-- **Live position + honest ETA** — wait estimates are derived from the last 20 real serve times per counter, not a fixed guess.
-- **Ticket recovery** — closing the tab doesn't lose your place; reopening `/student` picks your ticket back up.
-- **"You're almost up" notification** — fires once you're down to 2 people ahead.
-- **"It's your turn" 🎉 notification** — fires the instant an admin calls your token.
-- **Duplicate-join guard** — one active ticket per person per counter.
-- **Queue Intelligence (admin)** — each counter gets a live traffic read (Clear / Low / Moderate / High), a plain-language operational recommendation ("open a second counter"), and an estimated minutes-to-clear-the-line figure — all computed from that counter's own history, not hardcoded.
-- **Impact metric (home page)** — a running total of minutes given back to students today by not having to physically stand in line, plus tokens served campus-wide.
-- **Admin dashboard** — call next, serve a walk-in, skip a no-show back into the line, reset a counter, all per-service, refreshing live every few seconds.
-- **Password-protected admin** — `/admin` and every mutating endpoint require a session login.
-- **Public "now serving" board** — the home page shows a live snapshot across all four counters.
-- **Light/dark theme toggle** — remembered per browser via `localStorage`; the LED "now serving" board intentionally stays dark in both themes, like a real physical counter display.
-- **Responsive UI** — service tabs scroll horizontally, ticket and wait-list rows restack, on phones down to ~360px wide.
-- **SQLite** for local development, **Gunicorn-ready** for deployment.
+Staff get a real-time admin dashboard to manage queues, monitor service demand, and make better operational decisions.
 
-## Run locally
+---
 
-```bash
-python -m venv .venv
-source .venv/bin/activate      # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+## 🚀 Live Demo
 
-cp .env.example .env           # then edit .env with a real ADMIN_PASSWORD and SECRET_KEY
-export $(grep -v '^#' .env | xargs)   # or use python-dotenv / your host's env settings
+🌐 **[Try QueueLess Live](https://queue-less.onrender.com)**
 
-python app.py
-```
+💻 **[View Source Code on GitHub](https://github.com/divyanshu07-code/Queue-Less)**
 
-Open http://127.0.0.1:5000
+> **Take a token. Leave the physical queue. Get your time back.**
 
-- Student flow: `/student`
-- Admin dashboard: `/admin` (prompts for `ADMIN_PASSWORD`, default `admin123` if unset — **change this before demoing or deploying**)
+---
 
-## Push to GitHub
+## 💡 Problem
 
-```bash
-git init
-git add .
-git commit -m "QueueLess: campus virtual queue system"
-git branch -M main
-git remote add origin https://github.com/<your-username>/<your-repo>.git
-git push -u origin main
-```
+Students often waste significant time physically standing in queues for campus services without knowing:
 
-`queue.db`, `.env`, `.venv/`, and `__pycache__/` are already in `.gitignore`, so the local database and secrets won't get committed. Only `.env.example` (no real values) goes up.
+- How many people are ahead
+- How long they will have to wait
+- When they should return
+- Whether the queue is becoming crowded
 
-## Project structure
+This creates unnecessary waiting, congestion, and inefficient use of students' time.
 
-```
-app.py                  Flask app: routes, queue logic, wait-time estimation, admin auth
-templates/               Jinja pages (home, student, admin, admin login, 404)
-static/css/style.css     Design system (LED "now serving" board + ticket-stub UI)
-static/js/               main.js (shared helpers), home.js, student.js, admin.js
-queue.db                 SQLite database (created automatically on first run)
-```
+---
 
-## How wait time is estimated
+## 💡 Solution
 
-For each counter, `estimate_wait()` looks at the last 20 completed serves, takes the average serving duration (discarding obvious outliers), and multiplies by how many people are ahead. If someone is actively being served, their elapsed time is subtracted from that first slot so the estimate doesn't jump the instant they reach the counter. New counters with no history fall back to a 3-minute default per person.
+QueueLess transforms physical campus queues into a **digital, real-time queue system**.
 
-## API overview
+Instead of standing in line, students can:
 
-| Method | Route | Purpose | Auth |
-|---|---|---|---|
-| GET | `/api/queue/<service>` | Current + waiting list for a counter | public |
-| GET | `/api/overview` | Snapshot across all counters | public |
-| GET | `/api/stats/<service>` | Waiting/serving/served/cancelled counts | public |
-| POST | `/api/join` | Take a token | public |
-| GET | `/api/status/<id>` | Poll a ticket's live status | public |
-| POST | `/api/leave/<id>` | Cancel a waiting ticket | public |
-| POST | `/api/next` | Call the next token | admin |
-| POST | `/api/serve/<id>` | Mark a specific ticket served | admin |
-| POST | `/api/skip/<id>` | Send a no-show to the back of the line | admin |
-| POST | `/api/reset/<service>` | Clear a counter's tickets (demo helper) | admin |
-| GET | `/api/intelligence/<service>` | Traffic level, recommendation, clearing-time estimate | admin |
-| GET | `/api/impact` | Campus-wide minutes-saved metric for today | public |
+1. Select a campus service
+2. Take a digital token
+3. Leave the physical queue
+4. Track their live position
+5. See an estimated waiting time
+6. Receive an "almost your turn" notification
+7. Receive an "it's your turn" notification
+8. Return to the counter when needed
 
-## Deployment (Render, or any Gunicorn-friendly host)
+Meanwhile, administrators get real-time visibility into queue demand and service performance.
 
-- Build command: `pip install -r requirements.txt`
-- Start command: `gunicorn app:app`
-- Set environment variables `ADMIN_PASSWORD` and `SECRET_KEY` in the host's dashboard — don't ship the defaults.
+---
 
-SQLite is fine for a hackathon demo or a single-instance deployment. For multi-instance production, move the database to PostgreSQL and swap `sqlite3` in `app.py` for a driver like `psycopg`.
+## ✨ Features
 
-## Known limitations / next steps
+### 🎟️ Student Experience
 
-- Admin login is a single shared password — fine for a hackathon counter, not for multi-staff accounts. A real deployment would want per-staff logins and CSRF tokens on the admin forms.
-- Notifications require the browser tab to be open (no push notifications / service worker yet).
-- No SMS/WhatsApp fallback for students without a data connection at the moment they're called.
+- **Digital tokens** — join any counter's line in two taps.
+- **No account required** — students can join without creating an account.
+- **Live queue position** — see how many people are ahead.
+- **Estimated waiting time** — dynamically calculated from actual service history.
+- **Ticket recovery** — closing the browser tab does not immediately lose the active ticket.
+- **"You're almost up" notification** — triggered when only two people are ahead.
+- **"It's your turn" notification** — triggered when an administrator calls the student's token.
+- **Duplicate-join protection** — prevents multiple active tickets for the same person at the same counter.
+- **Responsive design** — works across desktop, tablet, and mobile.
+
+---
+
+### 🧠 Queue Intelligence
+
+QueueLess provides administrators with real-time queue insights.
+
+For every counter, the system calculates:
+
+- Current queue size
+- Traffic level:
+  - Clear
+  - Low
+  - Moderate
+  - High
+- Estimated time to clear the queue
+- Operational recommendations
+
+For example:
+
+> **High Traffic Detected**  
+> Consider opening an additional counter.
+
+The recommendations are calculated from the counter's queue state and service history rather than being hardcoded.
+
+---
+
+### 📊 Impact Metrics
+
+The home page displays campus-wide impact metrics including:
+
+- Tokens served
+- Estimated minutes saved for students
+- Current queue activity
+
+The goal is to demonstrate the real-world value of replacing physical waiting with predictable digital waiting.
+
+---
+
+### 🛠️ Admin Dashboard
+
+Staff can manage each campus service from a centralized dashboard.
+
+Administrators can:
+
+- Call the next token
+- Mark walk-ins as served
+- Skip no-shows
+- Send skipped tickets to the back of the queue
+- Reset a counter
+- Monitor current queue activity
+- View live statistics
+- View Queue Intelligence
+- Monitor service performance
+
+The dashboard refreshes automatically so staff can manage queues in real time.
+
+---
+
+### 📺 Public Now-Serving Board
+
+The home page provides a live overview of all campus counters.
+
+Students can see which token is currently being served at:
+
+- 🏢 College Office
+- 🍔 Canteen
+- 🏥 Clinic
+- 📚 Library
+
+This can also be displayed on a shared campus screen.
+
+---
+
+### 🌗 Modern Responsive UI
+
+- Desktop and mobile responsive
+- Light/dark theme
+- Mobile-friendly service navigation
+- Real-time queue cards
+- Digital ticket-style interface
+- LED-inspired "Now Serving" display
+- Designed for quick use in real campus environments
+
+---
+
+# 🏗️ Technology Stack
+
+| Technology | Purpose |
+|---|---|
+| Python | Backend logic |
+| Flask | Web framework and API |
+| SQLite | Database |
+| HTML5 | Page structure |
+| CSS3 | Responsive UI |
+| JavaScript | Real-time frontend interactions |
+| Gunicorn | Production WSGI server |
+| Render | Cloud deployment |
+
+---
+
+# 📂 Project Structure
+
+```text
+Queue-Less/
+│
+├── app.py
+├── requirements.txt
+├── README.md
+├── LICENSE
+├── .gitignore
+├── .env.example
+│
+├── templates/
+│   ├── index.html
+│   ├── student.html
+│   ├── admin.html
+│   ├── admin_login.html
+│   ├── 404.html
+│   └── _icons.html
+│
+└── static/
+    ├── css/
+    │   └── style.css
+    │
+    └── js/
+        ├── main.js
+        ├── home.js
+        ├── student.js
+        └── admin.js
