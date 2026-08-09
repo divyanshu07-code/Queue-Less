@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script>(function(){try{var t=localStorage.getItem("queueless_theme")||"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin login · QueueLess</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="wrap topbar">
+    <a class="brand" href="{{ url_for('home') }}"><span class="dot"></span>QueueLess</a>
+    <nav class="nav-links">
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle theme"></button>
+    </nav>
+  </header>
+  <main>
+    <div class="login-shell panel">
+      <span class="eyebrow">Staff access</span>
+      <h2 style="margin:8px 0 4px; font-size:1.3rem;">Admin sign-in</h2>
+      <p class="muted" style="margin:0 0 20px; font-size:0.88rem;">Enter the counter password to call tokens and manage the line.</p>
+      <div id="login-error" class="error-msg"></div>
+      <div class="field">
+        <label for="pw-input">Password</label>
+        <input type="password" id="pw-input" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="btn btn-primary btn-block" id="login-btn">Sign in</button>
+    </div>
+  </main>
+  <footer class="site-footer">Built for Hack Devengers 1.0 · QueueLess</footer>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script>
+    const btn = document.getElementById('login-btn');
+    const pw = document.getElementById('pw-input');
+    const err = document.getElementById('login-error');
+    async function submit() {
+      err.classList.remove('show');
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pw.value })
+      });
+      const data = await res.json();
+      if (data.success) {
+        window.location.href = '/admin';
+      } else {
+        err.textContent = data.message || 'Incorrect password.';
+        err.classList.add('show');
+      }
+    }
+    btn.addEventListener('click', submit);
+    pw.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); });
+    pw.focus();
+  </script>
+</body>
+</html>

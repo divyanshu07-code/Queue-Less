@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script>(function(){try{var t=localStorage.getItem("queueless_theme")||"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Admin · QueueLess</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  {% import "_icons.html" as ico %}
+  <header class="wrap topbar">
+    <a class="brand" href="{{ url_for('home') }}"><span class="dot"></span>QueueLess</a>
+    <nav class="nav-links">
+      <a href="{{ url_for('student') }}">Student view</a>
+      <button class="btn-link" id="logout-btn" style="background:none;border:none;cursor:pointer;font-family:inherit;">Log out</button>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle theme"></button>
+    </nav>
+  </header>
+
+  <main class="wrap" style="padding-bottom:60px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin:26px 0 10px; flex-wrap:wrap; gap:10px;">
+      <div>
+        <span class="eyebrow">Admin dashboard</span>
+        <h1 style="font-size:1.6rem; margin-top:6px;">Counter control</h1>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="refresh-btn">{{ ico.icon('refresh', 15) }}&nbsp; Refresh</button>
+    </div>
+
+    <div class="admin-grid">
+      <nav class="service-tabs" id="service-tabs">
+        {% for s in services %}
+        <button class="service-tab{{ ' active' if loop.first else '' }}" data-service="{{ s }}">
+          <span>{{ s }}</span>
+          <span class="count-badge" data-service-count="{{ s }}">0</span>
+        </button>
+        {% endfor %}
+      </nav>
+
+      <div>
+        <div class="led-board">
+          <div class="led-label"><span id="active-service-name">—</span><span>Now serving</span></div>
+          <div class="led-digits" id="serving-digits">--</div>
+          <div class="led-sub" id="serving-name">No one at the counter</div>
+        </div>
+
+        <div class="intel-panel" id="intel-panel">
+          <div class="intel-head">
+            <span class="eyebrow">Queue intelligence</span>
+            <span class="traffic-badge" id="traffic-badge">—</span>
+          </div>
+          <p class="intel-rec" id="intel-rec">Loading…</p>
+          <div class="intel-stats">
+            <div><span class="n" id="intel-clearing">–</span><span class="l">Min to clear line</span></div>
+            <div><span class="n" id="intel-avg">–</span><span class="l">Avg min / student</span></div>
+          </div>
+        </div>
+
+        <div class="stat-strip" id="stat-strip">
+          <div class="stat-tile"><div class="n" id="stat-waiting">0</div><div class="l">Waiting</div></div>
+          <div class="stat-tile"><div class="n" id="stat-serving">0</div><div class="l">Serving</div></div>
+          <div class="stat-tile"><div class="n" id="stat-served">0</div><div class="l">Served</div></div>
+          <div class="stat-tile"><div class="n" id="stat-cancelled">0</div><div class="l">Cancelled</div></div>
+        </div>
+
+        <div class="admin-actions">
+          <button class="btn btn-mint" id="call-next-btn">{{ ico.icon('check', 16) }}&nbsp; Call next</button>
+          <button class="btn btn-danger" id="reset-btn">Reset this counter</button>
+        </div>
+
+        <h3 style="font-size:0.95rem; margin:26px 0 2px;">Waiting line</h3>
+        <div class="wait-list" id="wait-list">
+          <div class="empty-state">{{ ico.icon('empty', 30) }}<div>No one waiting yet.</div></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <footer class="site-footer">Built for Hack Devengers 1.0 · QueueLess</footer>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script>
+    const SERVICES = {{ services|tojson }};
+  </script>
+  <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+</html>

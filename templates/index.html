@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script>(function(){try{var t=localStorage.getItem("queueless_theme")||"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>QueueLess — skip the line, not your turn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  {% import "_icons.html" as ico %}
+  <header class="wrap topbar">
+    <a class="brand" href="{{ url_for('home') }}"><span class="dot"></span>QueueLess</a>
+    <nav class="nav-links">
+      <a href="{{ url_for('student') }}">Join a queue</a>
+      <a href="{{ url_for('admin') }}">Admin</a>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle theme"></button>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <span class="eyebrow">Hack Devengers 1.0 · Campus Queue Network</span>
+      <h1>Take a token.<br>Wait wherever you like.</h1>
+      <p class="lede">College Office, Canteen, Clinic, Library — one virtual line for each counter, with a live position and an honest wait estimate, so you never have to stand around holding your spot.</p>
+      <a class="btn btn-primary" href="{{ url_for('student') }}">Get a token{{ ' ' }}→</a>
+    </section>
+
+    <section aria-label="Live counter overview">
+      <div class="led-board">
+        <div class="led-label"><span>Live now</span><span id="board-clock"></span></div>
+        <div id="overview-strip" class="overview-strip">
+          <!-- filled by JS -->
+        </div>
+      </div>
+    </section>
+
+    <section aria-label="Campus impact">
+      <div class="impact-strip">
+        <div class="impact-card">
+          <div class="impact-value" id="impact-minutes">–</div>
+          <div class="impact-label">Given back to students today — time freed from standing in line</div>
+        </div>
+        <div class="impact-card">
+          <div class="impact-value" id="impact-tokens">–</div>
+          <div class="impact-label">Tokens served across campus today</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 style="margin:14px 0 4px; font-size:1.3rem;">Counters</h2>
+      <p class="muted" style="margin:6px 0 0; font-size:0.92rem;">Pick a counter to see its line, or head straight to the join page.</p>
+      <div class="service-grid">
+        {% for s in services %}
+        <a class="service-card" href="{{ url_for('student') }}?service={{ s|urlencode }}">
+          <span class="service-icon">{{ ico.icon(icons[s]) }}</span>
+          <h3>{{ s }}</h3>
+          <div class="service-meta" data-service="{{ s }}">
+            <span class="pill is-empty" data-role="waiting-pill">— waiting</span>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer"> · QueueLess  Built By Divyanshu </footer>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script>
+    const SERVICES = {{ services|tojson }};
+  </script>
+  <script src="{{ url_for('static', filename='js/home.js') }}"></script>
+</body>
+</html>

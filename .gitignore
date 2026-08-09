@@ -1,0 +1,6 @@
+*.pyc
+.env
+.venv/
+.vscode/
+__pycache__/
+queue.db

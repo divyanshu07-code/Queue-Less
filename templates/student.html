@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script>(function(){try{var t=localStorage.getItem("queueless_theme")||"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Join a queue · QueueLess</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  {% import "_icons.html" as ico %}
+  <header class="wrap topbar">
+    <a class="brand" href="{{ url_for('home') }}"><span class="dot"></span>QueueLess</a>
+    <nav class="nav-links">
+      <a href="{{ url_for('admin') }}">Admin</a>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle theme"></button>
+    </nav>
+  </header>
+
+  <main class="wrap" style="padding-bottom:60px;">
+
+    <!-- STEP 1: join form -->
+    <section id="join-step" class="panel" style="max-width:520px; margin:30px auto;">
+      <span class="eyebrow">Step 1 of 2</span>
+      <h2 style="margin:8px 0 4px; font-size:1.4rem;">Grab a token</h2>
+      <p class="muted" style="margin:0 0 20px; font-size:0.9rem;">Pick a counter and enter your name — we'll hold your place.</p>
+
+      <div id="join-error" class="error-msg"></div>
+
+      <div class="field">
+        <label for="name-input">Your name</label>
+        <input type="text" id="name-input" placeholder="e.g. Aditi Sharma" autocomplete="name" maxlength="60">
+      </div>
+
+      <div class="field">
+        <label>Counter</label>
+        <div class="service-grid" id="service-picker" style="margin:0;">
+          {% for s in services %}
+          <button type="button" class="service-card" data-service="{{ s }}" style="text-align:left;">
+            <span class="service-icon">{{ ico.icon(icons[s]) }}</span>
+            <h3>{{ s }}</h3>
+            <div class="service-meta"><span class="pill is-empty" data-role="waiting-pill" data-service-pill="{{ s }}">— waiting</span></div>
+          </button>
+          {% endfor %}
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-block" id="join-btn" disabled>{{ ico.icon('ticket', 18) }}&nbsp; Join the line</button>
+    </section>
+
+    <!-- STEP 2: ticket -->
+    <section id="ticket-step" class="wrap" style="max-width:480px; margin:30px auto; display:none; padding:0;">
+      <div class="ticket">
+        <div class="ticket-head">
+          <div>
+            <div class="ticket-service" id="t-service">—</div>
+            <div class="ticket-name" id="t-name">—</div>
+            <div class="ticket-status"><span class="status-dot waiting" id="t-status-dot"></span><span id="t-status-text">Waiting</span></div>
+          </div>
+          <div>
+            <div class="ticket-token-label">TOKEN</div>
+            <div class="ticket-token" id="t-token">--</div>
+          </div>
+        </div>
+
+        <div class="perf"></div>
+
+        <div class="ticket-stats">
+          <div class="stat-block">
+            <div class="stat-value" id="t-ahead">–</div>
+            <div class="stat-label">People ahead</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-value" id="t-eta">–</div>
+            <div class="stat-label">Est. minutes</div>
+          </div>
+        </div>
+
+        <div class="progress-track"><div class="progress-fill" id="t-progress" style="width:0%"></div></div>
+        <div class="faint" style="font-size:0.75rem; margin-top:4px;">Now serving token <span id="t-current">0</span></div>
+
+        <div class="admin-actions" style="margin-top:20px;">
+          <button class="btn btn-ghost" id="cancel-btn">{{ ico.icon('x', 16) }}&nbsp; Cancel ticket</button>
+          <button class="btn btn-ghost" id="new-ticket-btn" style="display:none;">Join another line</button>
+        </div>
+      </div>
+      <p class="faint" style="text-align:center; font-size:0.76rem; margin-top:14px;">This page updates automatically every few seconds — feel free to keep it open in the background.</p>
+    </section>
+
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <footer class="site-footer">Built for Hack Devengers 1.0 · QueueLess</footer>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script>
+    const SERVICES = {{ services|tojson }};
+    const PRESELECT = {{ request.args.get('service', '')|tojson }};
+  </script>
+  <script src="{{ url_for('static', filename='js/student.js') }}"></script>
+</body>
+</html>
